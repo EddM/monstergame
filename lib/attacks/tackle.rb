@@ -1,0 +1,2 @@
+class Tackle < Attack
+end

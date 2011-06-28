@@ -1,0 +1,3 @@
+class MegaPunch < Attack
+  
+end

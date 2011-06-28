@@ -21,13 +21,13 @@ describe Attack do
   it "damages more if the victim is weak to its type" do
     Kernel.stub!(:rand).and_return(7)
       
-    magicarp = Magicarp.new(10)
+    magikarp = Magikarp.new(10)
     pikachu = Pikachu.new(10)
     
     thundershock = Thundershock.new
     lambda {
-      thundershock.attack!(magicarp, pikachu)
-    }.should change(magicarp, :hp_remaining).by(-88)
+      thundershock.attack!(magikarp, pikachu)
+    }.should change(magikarp, :hp_remaining).by(-88)
   end
   
   it "damages less if the victim is resistant to its type" do
@@ -40,6 +40,22 @@ describe Attack do
     lambda {
       thundershock.attack!(pikachu, pikachu2)
     }.should change(pikachu, :hp_remaining).by(-22)
+  end
+  
+  it "can provide stat buffs" do
+    geodude = Geodude.new(13)
+    geodude.available_attacks.should include(DefenseCurl)
+    lambda {
+      geodude.attack!(DefenseCurl, nil)
+    }.should change(geodude, :defence).by(1)
+  end
+  
+  it "can inflict stat debuffs" do
+    pikachu = Pikachu.new(5)
+    charmander = Charmander.new(5)
+    lambda {
+      pikachu.attack!(Growl, charmander)
+    }.should change(charmander, :attack).by(-1)
   end
 
 end

@@ -1,7 +1,7 @@
 class Pikachu < ElectricMonster
   
-  attack Growl
-  attack Thundershock
-  attack TailWhip, 6
+  has_attack Growl
+  has_attack Thundershock
+  has_attack TailWhip, 6
   
 end

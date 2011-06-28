@@ -113,18 +113,73 @@ describe Monster do
     pikachu.attacks.should include(Thundershock)
     pikachu.attacks.should include({ 6 => TailWhip })
     pikachu.attacks.should_not include(WaterGun)
+    
+    charmander = Charmander.new
+    charmander.attacks.should_not include(Thundershock)
   end
   
   it "has attacks restricted to levels" do
     pikachu = Pikachu.new(2)
     pikachu.available_attacks.should include(Growl)
     pikachu.available_attacks.should include(Thundershock)
-    pikachu.available_attacks.should_not include({ 6 => TailWhip })
+    pikachu.available_attacks.should_not include(TailWhip)
 
     pikachu = Pikachu.new(8)
     pikachu.available_attacks.should include(Growl)
     pikachu.available_attacks.should include(Thundershock)
-    pikachu.available_attacks.should include({ 6 => TailWhip })
+    pikachu.available_attacks.should include(TailWhip)
+  end
+  
+  it "can learn arbitrary additional attacks" do
+    pikachu = Pikachu.new(5)
+    pikachu.available_attacks.should_not include(MegaPunch)
+    pikachu.learn_attack(MegaPunch)
+    pikachu.available_attacks.should include(MegaPunch)
+  end
+  
+  it "can invoke specific attacks" do
+    pikachu = Pikachu.new(5)
+    charmander = Charmander.new(5)
+    
+    lambda {
+      pikachu.attack!(Thundershock, charmander)
+    }.should change(charmander, :hp_remaining)
+    
+    lambda {
+      charmander.attack!(Thundershock, pikachu)
+    }.should raise_error(AttackNotAvailableError)
+  end
+  
+  it "can be buffed with temporary stats" do
+    pikachu = Pikachu.new(5)
+    original = pikachu.attack
+    pikachu.buff!(:attack, 5)
+    pikachu.attack.should == (original + 5)
+    pikachu.reset_buffs!
+    pikachu.attack.should == original
+  end
+  
+  it "can be debuffed on stats temporarily" do
+    pikachu = Pikachu.new(5)
+    original = pikachu.attack
+    
+    pikachu.debuff!(:attack, 2)
+    pikachu.attack.should == (original - 2)
+    pikachu.reset_buffs!
+    pikachu.attack.should == original
+    
+    pikachu.buff!(:attack, 7)
+    pikachu.debuff!(:attack, 3)
+    pikachu.attack.should == (original + 4)
+    pikachu.reset_buffs!
+    pikachu.attack.should == original
+  end
+  
+  it "can only buff a certain set of stats" do
+    pikachu = Pikachu.new(10)
+    lambda { pikachu.buff!(:attack, 5) }.should_not raise_error
+    lambda { pikachu.buff!(:defence, 5) }.should_not raise_error
+    lambda { pikachu.buff!(:level, 5) }.should raise_error
   end
   
 end
