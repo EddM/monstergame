@@ -1,0 +1,2 @@
+class Magicarp < WaterMonster
+end

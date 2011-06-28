@@ -1,0 +1,2 @@
+class TailWhip < Attack
+end

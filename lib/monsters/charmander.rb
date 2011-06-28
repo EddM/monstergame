@@ -1,0 +1,2 @@
+class Charmander < FireMonster
+end

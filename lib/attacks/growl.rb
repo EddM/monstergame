@@ -1,0 +1,2 @@
+class Growl < Attack
+end
