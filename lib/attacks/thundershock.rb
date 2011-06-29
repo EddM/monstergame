@@ -1,7 +1,7 @@
 class Thundershock < ElectricAttack
   
-  def attack!(victim, attacker)
-    damage!(victim, attacker, 100)
+  def attack!(victim)
+    damage!(victim, 100)
   end
   
 end

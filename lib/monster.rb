@@ -2,11 +2,11 @@
 
 class Monster
   
-  BATTLE_STATS = [:attack, :defence]
+  BATTLE_STATS = [:attack, :defence, :speed]
   TYPES = %w(fighting flying poison ground rock bug ghost fire water grass electric psychic ice dragon)
   
   attr_reader :type, :weaknesses, :resistances
-  attr_reader :level, :max_hp, :hp_remaining, :alive, :attack, :defence
+  attr_reader :level, :max_hp, :hp_remaining, :alive, :attack, :defence, :speed
   attr_reader :buffs, :poisoned
   
   def initialize(level = 1, base_hp = 100)
@@ -21,6 +21,7 @@ class Monster
     
     @attack = 10
     @defence = 4
+    @speed = 5
   end
   
   def tick!
@@ -36,11 +37,10 @@ class Monster
   end
   alias :heal! :add_hp!
   
-  def damage!(amount, type = :normal, attacker = nil)
+  def damage!(amount, type = :normal, attacker = nil, crit = 1)
     stab = attacker && type == attacker.type ? 1.5 : 1
-    crit = 1
     type = weak_to?(type) ? 2 : (resistant_to?(type) ? 0.5 : 1)
-    modifier = (stab * type * crit * 1) * ((85 + Kernel.rand(15)) / 100.0)
+    modifier = (stab * type * crit * 1) * ((85 + Random.damage_modifier) / 100.0)
 
     level = (2 * (attacker ? attacker.level : @level) + 10) / 250.0
     differential = attacker ? attacker.attack / @defence.to_f : @attack / @defence.to_f
@@ -48,6 +48,8 @@ class Monster
     amount = (level * differential * amount + 2) * modifier
     amount = amount < 1 ? 1 : amount.floor
     remove_hp!(amount)
+    
+    amount
   end
   
   def remove_hp!(amount)
@@ -74,7 +76,8 @@ class Monster
     @poisoned
   end
   
-  def poison!
+  def poison!(dmg = 0)
+    damage!(dmg, :poison) if dmg > 0
     @poisoned = true
   end
   
@@ -92,8 +95,8 @@ class Monster
   
   def attack!(attack, victim)
     if available_attacks.include? attack
-      atk = attack.new
-      atk.attack!(victim, self)
+      atk = attack.new(self)
+      atk.attack!(victim)
     else
       raise AttackNotAvailableError
     end

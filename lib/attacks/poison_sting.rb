@@ -1,8 +1,7 @@
 class PoisonSting < Attack
   
-  def attack!(victim, attacker)
-    victim.damage!(5, :poison)
-    victim.poison!
+  def attack!(victim)
+    victim.poison!(5)
   end
   
 end

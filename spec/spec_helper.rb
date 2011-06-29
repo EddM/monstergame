@@ -7,6 +7,8 @@ Monster::TYPES.each do |type|
   require "lib/monsters/types/#{type}_monster"
 end
 
+require "lib/player"
+
 require "lib/attack"
 require "lib/attacks/types/electric_attack"
 require "lib/attacks/growl"
@@ -25,3 +27,7 @@ require "lib/monsters/geodude"
 require "lib/monsters/weedle"
 
 require "lib/exceptions/attack_not_available_error"
+require "lib/exceptions/no_monster_slots_left_error"
+
+
+require "lib/utils/random"

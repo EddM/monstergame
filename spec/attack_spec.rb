@@ -8,38 +8,41 @@ describe Attack do
   end
   
   it "does damage" do
-    Kernel.stub!(:rand).and_return(7)
+    Random.stub!(:damage_modifier).and_return(7)
+    Random.stub!(:critical).and_return(false)
     
     pikachu = Pikachu.new(10)
     charmander = Charmander.new(10)
-    thundershock = Thundershock.new
+    thundershock = Thundershock.new(pikachu)
     lambda {
-      thundershock.attack!(charmander, pikachu)
+      thundershock.attack!(charmander)
     }.should change(charmander, :hp_remaining).by(-44)
   end
   
   it "damages more if the victim is weak to its type" do
-    Kernel.stub!(:rand).and_return(7)
-      
+    Random.stub!(:damage_modifier).and_return(7)
+    Random.stub!(:critical).and_return(false)
+    
     magikarp = Magikarp.new(10)
     pikachu = Pikachu.new(10)
     
-    thundershock = Thundershock.new
+    thundershock = Thundershock.new(pikachu)
     lambda {
-      thundershock.attack!(magikarp, pikachu)
+      thundershock.attack!(magikarp)
     }.should change(magikarp, :hp_remaining).by(-88)
   end
   
   it "damages less if the victim is resistant to its type" do
-    Kernel.stub!(:rand).and_return(7)
+    Random.stub!(:damage_modifier).and_return(7)
+    Random.stub!(:critical).and_return(false)
     
     pikachu = Pikachu.new(10)
     pikachu2 = Pikachu.new(10)
   
-    thundershock = Thundershock.new
+    thundershock = Thundershock.new(pikachu)
     lambda {
-      thundershock.attack!(pikachu, pikachu2)
-    }.should change(pikachu, :hp_remaining).by(-22)
+      thundershock.attack!(pikachu2)
+    }.should change(pikachu2, :hp_remaining).by(-22)
   end
   
   it "can provide stat buffs" do
@@ -66,6 +69,19 @@ describe Attack do
     lambda { magikarp.tick! }.should change(magikarp, :hp_remaining).by_at_most(-1)
     lambda { magikarp.tick! }.should change(magikarp, :hp_remaining).by_at_most(-1)
     lambda { magikarp.tick! }.should change(magikarp, :hp_remaining).by_at_most(-1)
+  end
+  
+  it "can critically hit" do
+    Random.stub!(:damage_modifier).and_return(7)
+    
+    charmander = Charmander.new(25)
+    pikachu = Pikachu.new(10)
+    
+    Random.stub!(:critical).and_return(false)
+    non_critical_damage = pikachu.attack!(Thundershock, charmander)
+    Random.stub!(:critical).and_return(1)
+    critical_damage = pikachu.attack!(Thundershock, charmander)
+    critical_damage.should be > non_critical_damage
   end
 
 end

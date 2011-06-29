@@ -81,7 +81,8 @@ describe Monster do
   end
   
   it "takes no extra or less damage when attacked by a type it is neither resistant to nor weak to" do
-    Kernel.stub!(:rand).and_return(7)
+    Random.stub!(:damage_modifier).and_return(7)
+    Random.stub!(:critical).and_return(false)
     
     electric_monster = ElectricMonster.new(25)
     lambda {
@@ -90,7 +91,8 @@ describe Monster do
   end
   
   it "takes more damage when attacked against weakness" do
-    Kernel.stub!(:rand).and_return(7)
+    Random.stub!(:damage_modifier).and_return(7)
+    Random.stub!(:critical).and_return(false)
     
     electric_monster = ElectricMonster.new(25)
     lambda {
@@ -99,7 +101,8 @@ describe Monster do
   end
   
   it "takes less damage when attacked by a type it resists" do
-    Kernel.stub!(:rand).and_return(7)
+    Random.stub!(:damage_modifier).and_return(7)
+    Random.stub!(:critical).and_return(false)
     
     electric_monster = ElectricMonster.new(25)
     lambda {

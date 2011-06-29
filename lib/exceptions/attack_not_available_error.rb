@@ -1,2 +1,0 @@
-class AttackNotAvailableError < Exception
-end
