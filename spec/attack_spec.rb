@@ -57,5 +57,15 @@ describe Attack do
       pikachu.attack!(Growl, charmander)
     }.should change(charmander, :attack).by(-1)
   end
+  
+  it "can poison victims" do
+    magikarp = Magikarp.new(10)
+    weedle = Weedle.new(10)
+    weedle.attack!(PoisonSting, magikarp)
+    magikarp.should be_poisoned
+    lambda { magikarp.tick! }.should change(magikarp, :hp_remaining).by_at_most(-1)
+    lambda { magikarp.tick! }.should change(magikarp, :hp_remaining).by_at_most(-1)
+    lambda { magikarp.tick! }.should change(magikarp, :hp_remaining).by_at_most(-1)
+  end
 
 end

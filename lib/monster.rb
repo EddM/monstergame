@@ -7,7 +7,7 @@ class Monster
   
   attr_reader :type, :weaknesses, :resistances
   attr_reader :level, :max_hp, :hp_remaining, :alive, :attack, :defence
-  attr_reader :buffs
+  attr_reader :buffs, :poisoned
   
   def initialize(level = 1, base_hp = 100)
     @level = level
@@ -17,9 +17,14 @@ class Monster
     @weaknesses, @resistances, @learned_attacks = [], [], []
     @buffs = {}
     @alive = true
+    @poisoned = false
     
     @attack = 10
     @defence = 4
+  end
+  
+  def tick!
+    poison_tick! if poisoned?
   end
   
   def add_hp!(amount)
@@ -65,6 +70,18 @@ class Monster
     !@alive
   end
   
+  def poisoned?
+    @poisoned
+  end
+  
+  def poison!
+    @poisoned = true
+  end
+  
+  def poison_tick!
+    remove_hp! (@max_hp / 16.0).ceil
+  end
+  
   def weak_to?(type)
     @weaknesses.include?(type.to_sym)
   end
@@ -105,7 +122,7 @@ class Monster
       instance_variable_set("@#{stat.to_s}", instance_variable_get("@#{stat.to_s}") - value)
     end
     
-    @buffs = {}
+    @buffs.clear
   end
   
   def attacks
@@ -113,7 +130,9 @@ class Monster
   end
   
   def available_attacks
-    attacks.select { |a| a.class == Class || a.keys.first <= @level }.collect { |a| a.is_a?(Hash) ? a.values[0] : a }
+    attacks.select { |a| 
+      a.class == Class || a.keys.first <= @level 
+    }.collect { |a| a.is_a?(Hash) ? a.values.first : a }
   end
   
   def learn_attack(attack)

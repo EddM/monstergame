@@ -16,10 +16,12 @@ require "lib/attacks/water_gun"
 require "lib/attacks/mega_punch"
 require "lib/attacks/tackle"
 require "lib/attacks/defense_curl"
+require "lib/attacks/poison_sting"
 
 require "lib/monsters/pikachu"
 require "lib/monsters/charmander"
 require "lib/monsters/magikarp"
 require "lib/monsters/geodude"
+require "lib/monsters/weedle"
 
 require "lib/exceptions/attack_not_available_error"
